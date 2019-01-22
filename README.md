@@ -1,7 +1,7 @@
 # **EntaNet Behat**
 This package is designed specifically for EntaNet's Software QA department to aid with automation of features.
 
-# **Usage**
+# **The Package**
 Ensure Behat is initialized within your project before installing.
 
 You will find an "API_Context" class within the /src directory.
@@ -11,6 +11,8 @@ and uses Guzzle as the client handler.
 
 Our class requires one change out of the box, which is the "$requestPath"
 variable in the constructor. Here, replace the placeholder with your base API url.
+
+The class is autoloaded, so just extend the class in your FeatureContext class.
 
 There is a directory within /src called "examples" which will show you all the capabilities of the "API_Context" class.
 As the package evolves, so will the examples - So keep them in mind when there is a version update!
