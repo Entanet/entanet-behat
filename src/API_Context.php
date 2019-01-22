@@ -1,6 +1,8 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/phpunit/phpunit/src/Framework/Assert/Functions.php';
+Namespace EntaNetBehat;
+
+require_once 'vendor/phpunit/phpunit/src/Framework/Assert/Functions.php';
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
@@ -11,7 +13,7 @@ use GuzzleHttp\Client;
 /**
  * Defines application features from the specific context.
  */
-Namespace EntaNetBehat;
+
 
 class API_Context extends ApiContext implements Context
 {
