@@ -2,10 +2,17 @@
     "name": "entanet/entanet-behat",
     "description": "A package to help EntaNet's QA department automate features with Behat.",
     "type": "extension",
+    "license": "MIT",
     "authors": [
         {
             "name": "Ryan Ralphs",
-            "email": "ryan.ralphs@enta.net"
+            "email": "ryan.ralphs@enta.net",
+            "role": "SDET"
+        },
+        {
+            "name": "Tomos Lloyd",
+            "email": "tomos.lloys@enta.net",
+            "role": "Software Development Manager"
         }
     ],
     "require": {
