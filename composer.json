@@ -20,8 +20,8 @@
         "phpunit/phpunit": "^7.0"
     },
     "autoload": {
-        "psr-4": {
-            "EntaNetBehat": "src/"
+        "psr-0": {
+            "EntaNetBehat\\": "src"
         }
 }
 }
