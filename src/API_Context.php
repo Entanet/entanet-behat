@@ -250,7 +250,6 @@ class API_Context extends ApiContext implements Context
         $this->payload = $this->tableToArray($table);
         $this->request = $this->_client->patch($path, $this->payload)->withHeader('Content-type', "application/json; charset=UTF-8");
 
-
         $this->response = $this->combineResponses();
     }
 
