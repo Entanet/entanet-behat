@@ -1,5 +1,5 @@
 {
-    "name": "ryanralphs/entanet-behat",
+    "name": "entanet/entanet-behat",
     "description": "A package to help EntaNet's QA department automate features with Behat.",
     "type": "extension",
     "authors": [
