@@ -1,21 +1,18 @@
 <?php
 
-Namespace EntaNetBehat;
+namespace Entanet\Behat;
 
-require_once 'vendor/phpunit/phpunit/src/Framework/Assert/Functions.php';
+require_once __DIR__ . '/../../vendor/phpunit/phpunit/src/Framework/Assert/Functions.php';
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use Imbo\BehatApiExtension\Context\ApiContext;
+use Imbo\BehatApiExtension\Context\ApiContext as BaseContext;
 use GuzzleHttp\Client;
-
 
 /**
  * Defines application features from the specific context.
  */
-
-
-class API_Context extends ApiContext implements Context
+class APIContext extends BaseContext implements Context
 {
 
     public $response;
