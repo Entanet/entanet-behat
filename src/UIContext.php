@@ -65,6 +65,15 @@ class UIContext extends MinkContext implements Context
         assertTrue($element->hasClass($property));
     }
 
+    /**
+     * @When I click :linkName
+     * @param $linkName
+     * @throws
+     */
+    public function iClick($linkName)
+    {
+        $this->getPage()->clickLink($linkName);
+    }
 
     /**
      * Pauses the scenario until the user presses a key. Useful when debugging a scenario.
@@ -155,9 +164,18 @@ class UIContext extends MinkContext implements Context
      */
     public function clickButtonInRowByText($button, $rowText)
     {
-        $this->row = $this->findRowByText($rowText);
+       $this->findRowByText($rowText)->pressButton($button);
+    }
 
-        $this->row->pressButton($button);
+    /**
+     * Saving a screenshot
+     *
+     * @When I save a screenshot to :filename
+     */
+    public function iSaveAScreenshotIn($filename)
+    {
+        sleep(1);
+        $this->saveScreenshot($filename, __DIR__.'/../..');
     }
 
     /**
