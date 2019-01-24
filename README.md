@@ -1,11 +1,10 @@
-# **EntaNet Behat**
-This package is designed specifically for EntaNet's Software QA department to aid with automation of features.
+# **Entanet Behat**
+This package is designed specifically for Entanet's Software QA department to aid with automation of features.
 
 ### Installing
 
 A step by step series of examples that tell you how to get a development env running
 
-Say what the step will be
 
 ```
 composer require entanet/entanet-behat
