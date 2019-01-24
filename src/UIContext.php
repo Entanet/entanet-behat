@@ -61,6 +61,64 @@ class UIContext extends MinkContext implements Context
     }
 
     /**
+     * @Then I click table header :header
+     */
+    public function iClickTableHeader($header)
+    {
+        $row = $this->getPage()->find('css', sprintf('table th:contains("%s")', $header));
+        $this->waitForJavaScript();
+        $row->press();
+    }
+
+    /**
+     * @Given /^The element "(?P<selector>[^"]*)" should have a css property "(?P<property>[^"]*)" with a value of "(?P<value>[^"]*)"$/
+     *
+     */
+    public function assertElementHasCssValue($selector, $property, $value)
+    {
+        $page = $this->getPage();
+        $element = $page->find('css', $selector);
+
+        if (empty($element)) {
+            $message = sprintf('Could not find element using the selector "%s"', $selector);
+            throw new \Exception($message);
+        }
+        $style = $this->elementHasCSSValue($element, $property, $value);
+        if (empty($style)) {
+            $message = sprintf('The property "%s" for the selector "%s" is not "%s"', $property, $selector, $value);
+            throw new \Exception($message);
+        }
+    }
+
+    /**
+     * Determine if a Mink NodeElement contains a specific css rule attribute value.
+     *
+     * @param NodeElement $element
+     *   NodeElement previously selected with $this->getSession()->getPage()->find().
+     * @param string $property
+     *   Name of the CSS property, such as "visibility".
+     * @param string $value
+     *   Value of the specified rule, such as "hidden".
+     *
+     * @return NodeElement|bool
+     *   The NodeElement selected if true, FALSE otherwise.
+     */
+    protected function elementHasCSSValue($element, $property, $value)
+    {
+        $exists = FALSE;
+        $style = $element->getAttribute('style');
+        if ($style) {
+            if (preg_match("/(^{$property}:|; {$property}:) ([a-z0-9]+);/i", $style, $matches)) {
+                $found = array_pop($matches);
+                if ($found == $value) {
+                    $exists = $element;
+                }
+            }
+        }
+        return $exists;
+    }
+
+    /**
      * @Then I OK the JavaScript confirmation
      */
     public function iConfirmTheJsDialogue()
