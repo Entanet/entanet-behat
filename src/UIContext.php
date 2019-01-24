@@ -13,6 +13,15 @@ class UIContext extends MinkContext implements Context
 {
 
     private $javascriptWait = 2500;
+    public $page;
+    public $session;
+    public $row;
+
+    public function __construct()
+    {
+        $this->page = $this->getPage();
+        $this->session = $this->getSession();
+    }
 
     /**
      * @BeforeScenario
@@ -42,8 +51,20 @@ class UIContext extends MinkContext implements Context
 
     public function waitForJavaScript()
     {
-        $this->getSession()->wait($this->javascriptWait);
+        $this->session->wait($this->javascriptWait, "document.readyState === 'complete'");
     }
+
+    /**
+     * @Then /^the selector :element should have :property
+     * @param $element
+     * @param $property
+     */
+    public function theCssSelectorShouldHaveProperty($element, $property)
+    {
+        $element = $this->page->find('css', $element);
+        assertTrue($element->hasClass($property));
+    }
+
 
     /**
      * Pauses the scenario until the user presses a key. Useful when debugging a scenario.
@@ -65,7 +86,7 @@ class UIContext extends MinkContext implements Context
      */
     public function iClickTableHeader($header)
     {
-        $row = $this->getPage()->find('css', sprintf('table th:contains("%s")', $header));
+        $row = $this->page->find('css', sprintf('table th:contains("%s")', $header));
         $this->waitForJavaScript();
         $row->press();
     }
@@ -76,8 +97,7 @@ class UIContext extends MinkContext implements Context
      */
     public function assertElementHasCssValue($selector, $property, $value)
     {
-        $page = $this->getPage();
-        $element = $page->find('css', $selector);
+        $element = $this->page->find('css', $selector);
 
         if (empty($element)) {
             $message = sprintf('Could not find element using the selector "%s"', $selector);
@@ -119,11 +139,33 @@ class UIContext extends MinkContext implements Context
     }
 
     /**
+     * @param $rowText
+     * @return \Behat\Mink\Element\NodeElement
+     */
+    private function findRowByText($rowText)
+    {
+        $this->row = $this->getPage()->find('css', sprintf('table tr:contains("%s")', $rowText));
+        assertNotNull($this->row, 'Cannot find a table row with this text!');
+
+        return $this->row;
+    }
+
+    /**
+     * @Then I click the :button on the row that contains :rowText
+     */
+    public function clickButtonInRowByText($button, $rowText)
+    {
+        $this->row = $this->findRowByText($rowText);
+
+        $this->row->pressButton($button);
+    }
+
+    /**
      * @Then I OK the JavaScript confirmation
      */
     public function iConfirmTheJsDialogue()
     {
-        $selenuim = new \Behat\Mink\Driver\Selenium2Driver();
-        $selenuim->getWebDriverSession()->accept_alert();
+        $selenium = new \Behat\Mink\Driver\Selenium2Driver();
+        $selenium->getWebDriverSession()->accept_alert();
     }
 }
