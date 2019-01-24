@@ -7,7 +7,8 @@ use Behat\Gherkin\Node\TableNode;
 use Laracasts\Behat\Context\DatabaseTransactions;
 use Laracasts\Behat\Context\Migrator;
 use PHPUnit\Framework\Assert;
-use Illuminate\Support\Facades\DB;
+
+
 
 class DatabaseContext implements Context
 {
@@ -29,6 +30,19 @@ class DatabaseContext implements Context
         foreach ($table as $row) {
             Assert::assertNotEquals(false, DB::table($tableName)->where($row)->first());
         }
+    }
+
+    /**
+     * @Given I assert the object is stored in the database successfully in :table, with :value for :column
+     */
+    public function iAssertThisIsStoredInTheDatabaseSuccessfully($model, $column, $value)
+    {
+        $stored = DB::table($model)->where($column, $value)->count();
+
+        if ($stored) {
+            return true;
+        }
+        return false;
     }
 
     /**
