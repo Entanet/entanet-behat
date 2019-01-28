@@ -9,7 +9,6 @@ use Laracasts\Behat\Context\DatabaseTransactions;
 use Laracasts\Behat\Context\Migrator;
 use PHPUnit\Framework\Assert;
 
-
 class DatabaseContext implements Context
 {
     use Migrator, DatabaseTransactions;

@@ -29,6 +29,16 @@ class LaravelContext implements Context
     }
 
     /**
+     * @Given I am running the Seeders
+     */
+    public function iAmSeedingTheDatabase(TableNode $table)
+    {
+        foreach ($table as $seeder) {
+            Artisan::call('db:seed --class='.$seeder);
+        }
+    }
+
+    /**
      * @AfterScenario
      */
     public function tearDown()
