@@ -18,9 +18,9 @@ class KafkaContext implements Context
     }
 
     /**
-     * @When An event is published to :topic
+     * @When The following events are published to :topic
      */
-    public function anEventIsPublishedTo($topic, TableNode $table)
+    public function theFollowingEventsArePublishedTo($topic, TableNode $table)
     {
         foreach ($table as $row) {
             $this->adapter->publish($topic, $row);
