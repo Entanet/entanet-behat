@@ -18,13 +18,42 @@ class KafkaContext implements Context
     }
 
     /**
-     * @When An event is published to :topic
+     * @When The following events are published to :topic
      */
-    public function anEventIsPublishedTo($topic, TableNode $table)
+    public function theFollowingEventsArePublishedTo($topic, TableNode $table)
     {
         foreach ($table as $row) {
+            foreach ($row as $key => $value) {
+                if (str_contains($key, '.')) {
+                    $row = array_merge($row, $this->convertDotsToArray($key, $value));
+                }
+            }
+            
             $this->adapter->publish($topic, $row);
         }
+    }
+
+    /**
+     * Helper for turning dots into array
+     * @param $key
+     * @param $value
+     * @return array
+     */
+    private function convertDotsToArray($key, $value)
+    {
+        if (!str_contains($key, ".")) {
+            return [
+                $key => $value
+            ];
+        }
+
+        $segments = explode(".", $key);
+        $key = $segments[0];
+        array_shift($segments);
+
+        return [
+            $key => $this->convertDotsToArray(implode(".", $segments), $value)
+        ];
     }
 
     /**
