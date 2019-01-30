@@ -164,12 +164,23 @@ class UIContext extends MinkContext implements Context
      */
     public function clickButtonInRowByText($button, $rowText)
     {
-       $this->findRowByText($rowText)->pressButton($button);
+       $this->row = $this->findRowByText($rowText);
+
+       $this->row->pressButton($button);
+    }
+
+    /**
+     * @Then I assert the row that contains :rowText has class :css
+     */
+    public function assertCssInsideRow($rowText, $css)
+    {
+        $this->row = $this->findRowByText($rowText);
+
+        assertContains($css, $this->row);
     }
 
     /**
      * Saving a screenshot
-     *
      * @When I save a screenshot to :filename
      */
     public function iSaveAScreenshotIn($filename)
@@ -186,4 +197,80 @@ class UIContext extends MinkContext implements Context
         $selenium = new \Behat\Mink\Driver\Selenium2Driver();
         $selenium->getWebDriverSession()->accept_alert();
     }
+
+    /**
+     * @Then I expect CSS locator :locator has text :text
+     */
+    public function getText($locator, $text)
+    {
+        $getText = $this->getSession()->getPage()->find('css', $locator)->getText();
+
+        if ($getText === $text) {
+            return true;
+        }
+    }
+
+    /**
+     * @Then I ensure the :toggle is checked and has text :text
+     */
+    public function theCheckBoxIsChecked($toggle, $text)
+    {
+       $switch = $this->getText($toggle, $text);
+
+        if($switch == false) {
+            $this->getPage()->find('css', $toggle)->press();
+        }
+    }
+
+
+    /**
+     * @Then I visit the login page
+     */
+    public function iVisitTheLoginPage()
+    {
+        $this->visit('/login');
+    }
+
+    /**
+     * @Then I visit the register page
+     */
+    public function iVisitTheRegisterPage()
+    {
+        $this->visit('/register');
+    }
+
+    /**
+     * @When I click the :selector element
+     */
+    public function iClickTheElement($selector)
+    {
+        $page = $this->getSession()->getPage();
+        $element = $page->find('css', $selector);
+
+        if (empty($element)) {
+            throw new Exception("No html element found for the selector ('$selector')");
+        }
+
+        $element->click();
+        $this->javascriptWait;
+    }
+
+    /**
+     * UNIFY TEMPLATE RELATED FUNCTIONS
+     */
+
+
+
+
+    /**
+     * @Then I go to the :link via the Menu
+     */
+    public function iGoToLinkViaMenu($link)
+    {
+        $this->iClickTheElement('#menu');
+        $this->clickLink($link);
+        $this->javascriptWait;
+    }
+
+
 }
