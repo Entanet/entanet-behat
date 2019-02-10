@@ -8,7 +8,18 @@ use Illuminate\Support\Facades\Artisan;
 
 class LaravelContext implements Context
 {
-    protected $adapter;
+    /**
+     * @BeforeSuite
+     */
+    public static function prepare()
+    {
+        $commands = Artisan::all();
+        foreach ($commands as $command) {
+            if (property_exists($command, 'pubsub')) {
+                Artisan::call($command->getName());
+            }
+        }
+    }
 
     /**
      * @BeforeScenario
@@ -16,16 +27,6 @@ class LaravelContext implements Context
     public function setUp()
     {
 
-    }
-
-    /**
-     * @Given I am running the console commands
-     */
-    public function iAmRunningTheConsoleCommands(TableNode $table)
-    {
-        foreach ($table as $command) {
-            Artisan::call($command['name']);
-        }
     }
 
     /**

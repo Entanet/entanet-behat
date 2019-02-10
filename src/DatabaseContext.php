@@ -8,18 +8,19 @@ use Illuminate\Support\Facades\DB;
 use Laracasts\Behat\Context\DatabaseTransactions;
 use Laracasts\Behat\Context\Migrator;
 use PHPUnit\Framework\Assert;
+use Exception;
+use InvalidArgumentException;
 
+/**
+ * Class DatabaseContext
+ * @package Entanet\Behat
+ */
 class DatabaseContext implements Context
 {
-    use Migrator, DatabaseTransactions;
-
     /**
-     * @BeforeScenario
+     * Migrate refresh
      */
-    public function setUp()
-    {
-
-    }
+    use Migrator, DatabaseTransactions;
 
     /**
      * @Given I have the following in the :tableName table
@@ -27,8 +28,19 @@ class DatabaseContext implements Context
     public function iHaveTheFollowingInTheTable($tableName, TableNode $table)
     {
         foreach ($table as $row) {
+            // Find the model for the table
             $modelName = 'App\\Models\\' . studly_case(str_singular($tableName));
-            factory($modelName)->create($row);
+
+            if (!class_exists($modelName)) {
+                throw new Exception('Model does not exist ' . $modelName);
+            }
+
+            // Run factory to generate data
+            try {
+                factory($modelName)->create($row);
+            } catch (InvalidArgumentException $e) {
+                throw new Exception('No database factory defined for ' . $tableName);
+            }
         }
     }
 
@@ -38,28 +50,11 @@ class DatabaseContext implements Context
     public function iShouldHaveTheFollowingInTheTable($tableName, TableNode $table)
     {
         foreach ($table as $row) {
-            Assert::assertNotEquals(false, DB::table($tableName)->where($row)->first());
+            $found = DB::table($tableName)->where($row)->first();
+
+            if (!$found) {
+                throw new Exception('Row not found in ' . $tableName . ' : ' . json_encode($row));
+            }
         }
-    }
-
-    /**
-     * @Given I assert the object is stored in the database successfully in :table, with :value for :column
-     */
-    public function iAssertThisIsStoredInTheDatabaseSuccessfully($model, $column, $value)
-    {
-        $stored = DB::table($model)->where($column, $value)->count();
-
-        if ($stored) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @AfterScenario
-     */
-    public function tearDown()
-    {
-
     }
 }
