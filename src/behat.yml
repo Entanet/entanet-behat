@@ -1,0 +1,13 @@
+default:
+  suites:
+    default:
+      contexts:
+        - Entanet\Behat\APIContext
+        - Entanet\Behat\KafkaContext
+        - Entanet\Behat\LaravelContext
+        - Entanet\Behat\DatabaseContext
+  extensions:
+    Laracasts\Behat:
+    Behat\MinkExtension:
+      default_session: laravel
+      laravel: ~
