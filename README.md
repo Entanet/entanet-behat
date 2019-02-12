@@ -31,20 +31,14 @@ between the PubSub interface and the LocalAdapter:
 
 
 # **The Package**
-Ensure Behat is initialized within your project before installing.
 
-You will find an "API_Context" class within the /src directory.
-This extends Imbo's Behat API Extension 
-_(https://github.com/imbo/behat-api-extension)_
-and uses Guzzle as the client handler. 
+Aimed to aid with testing, the package includes API, Database, UI, Kafka and 
+Laravel Context files to test with that can be used out of the box. 
 
-Our class requires one change out of the box, which is the "$requestPath"
-variable in the constructor. Here, replace the placeholder with your base API url.
-
-The class is autoloaded, so just extend the class in your FeatureContext class.
-
-There is a directory within /src called "examples" which will show you all the capabilities of the "API_Context" class.
-As the package evolves, so will the examples - So keep them in mind when there is a version update!
+While we use in memory databases for DatabaseContext and mockery for Kafka, our API testing class 
+will instance an application by leveraging Illuminate's Kernel classes so no real
+call outs are ever made, and this allows us to use clean Laravel Feature Test style
+assertions.
 
 # **_Advantages_**
 This package leverages already established packages with the aim
