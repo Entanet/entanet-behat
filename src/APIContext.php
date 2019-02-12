@@ -6,17 +6,28 @@ require_once __DIR__ . '/../../../phpunit/phpunit/src/Framework/Assert/Functions
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use Imbo\BehatApiExtension\Context\ApiContext as BaseContext;
-use GuzzleHttp\Client;
+use Imbo\BehatApiExtension\Context\ApiContext as BaseContext;hhh
+use Illuminate\Support\Facades\Facade;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use \Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
+use Illuminate\Foundation\Testing\TestCase;
+use Tests\CreatesApplication;
+use Exception;
 
 /**
  * Defines application features from the specific context.
  */
-class APIContext extends BaseContext implements Context
+class APIContext extends TestCase implements Context
 {
+    use DatabaseMigrations;
+    use CreatesApplication;
+    use MakesHttpRequests;
 
     public $response;
     public $_client;
+    protected $request;
+    protected $app;
     protected $payload;
     protected $requestPath;
     private $auth;
@@ -30,10 +41,24 @@ class APIContext extends BaseContext implements Context
      */
     public function __construct()
     {
-        $this->requestPath = 'https://jsonplaceholder.typicode.com/';
-        $this->_client = new Client(['base_uri' => $this->requestPath]);
+        if (! $this->app) {
+            $this->refreshApplication();
+        }
 
-        $this->auth = ['username' => 'placeholder', 'password' => 'placeholder'];
+        $this->setUpTraits();
+
+        foreach ($this->afterApplicationCreatedCallbacks as $callback) {
+            call_user_func($callback);
+        }
+
+        Facade::clearResolvedInstances();
+
+        Model::setEventDispatcher($this->app['events']);
+
+        Artisan::call('migrate:fresh');
+        Artisan::call('db:seed');
+
+        $this->setUpHasRun = true;
     }
 
     /**
@@ -99,12 +124,16 @@ class APIContext extends BaseContext implements Context
     {
         $this->payload = $this->tableToArray($table);
 
-        $body = $this->response;
+        $this->response = json_encode($this->response);
+
 
         foreach ($this->payload as $key => $val) {
-            assertContains($key, $body);
-            assertContains($val, $body);
+
+            assertContains($key, $this->response);
+            assertContains($val, $this->response);
         }
+
+        $this->response = json_encode($this->response);
     }
 
 
@@ -118,6 +147,7 @@ class APIContext extends BaseContext implements Context
 
         return $array;
     }
+
 
     public function tableToJson(TableNode $table)
     {
@@ -139,25 +169,12 @@ class APIContext extends BaseContext implements Context
      */
     public function getRequestAPI($path)
     {
-        $this->request = $this->_client->get($path, [
+        $this->request = $this->get($path, [
             'track_redirects' => true
         ]);
 
-        $this->response = $this->combineResponses();
+        $this->response = $this->request->content();
 
-        return $this->response;
-    }
-
-    public function combineResponses()
-    {
-        $this->response = [];
-
-        $body = json_decode($this->request->getBody());
-        $headers = json_encode($this->request->getHeaders());
-
-        $this->response = array_add($this->response, 'Body', $body);
-        $this->response = array_add($this->response, 'Headers', $headers);
-        $this->response = json_encode($this->response);
 
         return $this->response;
     }
@@ -168,7 +185,7 @@ class APIContext extends BaseContext implements Context
      */
     public function requestAPIBody($path)
     {
-        $this->request = $this->_client->get($path);
+        $this->request = $this->get($path);
 
         $bod = json_decode($this->request->getBody(), true);
 
@@ -181,12 +198,14 @@ class APIContext extends BaseContext implements Context
      */
     public function iRequestTheHeadersOf($path)
     {
-        $this->request = $this->_client->get($path);
+        $this->request = $this->get($path);
 
-        $headers = $this->request->getHeaders();
+        $headers = $this->request->headers;
 
-        $this->response = json_encode($headers);
+        $this->response = (array) $headers;
     }
+
+
 
     /**
      * @When I expect the status code to be :code
@@ -197,6 +216,22 @@ class APIContext extends BaseContext implements Context
         $statusCode = $this->request->getStatusCode();
 
         assertEquals($code, $statusCode);
+    }
+
+    /**
+     * @Given I assert :table has a record where :column is :value
+     */
+    public function dataStoredInTable($table, $column, $value)
+    {
+        $this->assertDatabaseHas($table, [$column => $value]);
+    }
+
+    /**
+     * @Given I assert :table does not have a record where :column is :value
+     */
+    public function dataNotStoredInTable($table, $column, $value)
+    {
+        $this->assertDatabaseMissing($table, [$column => $value]);
     }
 
     /**
@@ -216,9 +251,9 @@ class APIContext extends BaseContext implements Context
 
     public function postRequestAPI($path, $payload)
     {
-        $this->request = $this->_client->post($path, $payload);
+        $this->request = $this->post($path, $payload);
 
-        $this->response = $this->combineResponses();
+        $this->response = $this->request;
 
         return $this->response;
     }
@@ -229,14 +264,17 @@ class APIContext extends BaseContext implements Context
      */
     public function deleteRequest($path)
     {
-        $this->request = $this->_client->delete($path);
+        $this->request = $this->delete($path);
 
         $code = $this->request->getStatusCode();
-        $headers = $this->request->getHeaders();
+        $headers = $this->request->headers;
+
+        $headers = (array) $headers;
 
         $response = array_add($headers, 'Status-Code', $code);
 
-        $this->response = json_encode($response);
+
+        $this->response = $response;
     }
 
     /**
@@ -247,9 +285,9 @@ class APIContext extends BaseContext implements Context
     public function patchRequest($path, TableNode $table)
     {
         $this->payload = $this->tableToArray($table);
-        $this->request = $this->_client->patch($path, $this->payload)->withHeader('Content-type', "application/json; charset=UTF-8");
+        $this->request = $this->patch($path, $this->payload)->header('Content-type', "application/json; charset=UTF-8");
 
-        $this->response = $this->combineResponses();
+        $this->response = json_encode($this->request);
     }
 
     /**
@@ -260,8 +298,8 @@ class APIContext extends BaseContext implements Context
     public function putRequest($path, TableNode $table)
     {
         $this->payload = $this->tableToArray($table);
-        $this->request = $this->_client->put($path, $this->payload);
+        $this->request = $this->put($path, $this->payload);
 
-        $this->response = $this->combineResponses();
+        $this->response = json_encode($this->request);
     }
 }

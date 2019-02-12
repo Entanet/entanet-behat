@@ -27,18 +27,27 @@
         "phpunit/phpunit": "^7.0",
         "superbalist/php-pubsub": "^2.0.0",
         "superbalist/laravel-pubsub": "^3.0.0",
-        "behat/mink-selenium2-driver": "^1.2"
+        "behat/mink-selenium2-driver": "^1.2",
+        "doctrine/dbal": "^2.9",
+        "fideloper/proxy": "^4.0",
+        "laravel/framework": "5.7.*",
+        "laravel/tinker": "^1.0"
     },
     "autoload": {
         "psr-4": {
             "Entanet\\Behat\\": "src/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Entanet\\Behat\\BehatServiceProvider"
-            ]
+        },
+        "autoload-dev": {
+            "psr-4": {
+                "Tests\\": "tests/"
+            }
+        },
+        "extra": {
+            "laravel": {
+                "providers": [
+                    "Entanet\\Behat\\BehatServiceProvider"
+                ]
+            }
         }
     }
 }
