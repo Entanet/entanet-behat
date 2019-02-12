@@ -5,12 +5,30 @@ This package is designed specifically for EntaNet's Software QA department to ai
 
 A step by step series of examples that tell you how to get a development env running
 
-Say what the step will be
-
 ```
 composer require entanet/entanet-behat
 php artisan vendor:publish --provider="Entanet\Behat\BehatServiceProvider"
 ```
+
+Publishing vendor files will create a behat.yml with suites initialized
+and a .env.behat with a sample URL and an in memory database.
+
+After running this, go to your _config/app.php_ file and 
+add this line to the "Providers" array:
+```
+'PubSub' => Superbalist\PubSub\Adapters\LocalPubSubAdapter::class,
+```
+
+Finally, go to your _AppServiceProvider.php_ and make a binding
+between the PubSub interface and the LocalAdapter:
+
+```
+  public function register()
+    {
+        $this->app->bind('Superbalist\PubSub\PubSubAdapterInterface', 'Superbalist\PubSub\Adapters\LocalPubSubAdapter');
+    }
+```
+
 
 # **The Package**
 Ensure Behat is initialized within your project before installing.
