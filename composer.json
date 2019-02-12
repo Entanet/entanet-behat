@@ -36,18 +36,13 @@
     "autoload": {
         "psr-4": {
             "Entanet\\Behat\\": "src/"
-        },
-        "autoload-dev": {
-            "psr-4": {
-                "Tests\\": "tests/"
-            }
-        },
-        "extra": {
-            "laravel": {
-                "providers": [
-                    "Entanet\\Behat\\BehatServiceProvider"
-                ]
-            }
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Entanet\\Behat\\BehatServiceProvider"
+            ]
         }
     }
 }
