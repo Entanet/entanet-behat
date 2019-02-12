@@ -5,10 +5,9 @@ namespace Entanet\Behat;
 require_once __DIR__ . '/../../../phpunit/phpunit/src/Framework/Assert/Functions.php';
 
 use Behat\Behat\Context\Context;
-use Behat\Gherkin\Node\TableNode;
-use Imbo\BehatApiExtension\Context\ApiContext as BaseContext;hhh
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Database\Eloquent\Model;
+use Behat\Gherkin\Node\TableNode;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use \Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
 use Illuminate\Foundation\Testing\TestCase;
