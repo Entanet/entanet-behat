@@ -43,7 +43,7 @@ class KafkaContext implements Context
      */
     public function setUp()
     {
-        $this->adapter = app(PubSubAdapterInterface::class);
+        $this->adapter = \Mockery::mock('PubSub');
         $this->setupFakeSubscribers();
     }
 
@@ -58,7 +58,7 @@ class KafkaContext implements Context
                     $row = array_merge_recursive($row, $this->convertDotsToArray($key, $value));
                 }
             }
-            
+
             $this->adapter->publish($topic, $row);
         }
     }
@@ -131,7 +131,7 @@ class KafkaContext implements Context
         $property->setAccessible(true);
 
         // Mock the get subscribers method to include a fake counter
-        $mock->shouldReceive('getSubscribersForChannel')->andReturnUsing(
+        $mock->allows('getSubscribersForChannel')->andReturnUsing(
             function($topic) use ($property, $mock) {
                 $subscribers = $property->getValue($mock);
 
