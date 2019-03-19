@@ -2,6 +2,8 @@
 
 namespace Entanet\Behat;
 
+require_once __DIR__ . '/../../../phpunit/phpunit/src/Framework/Assert/Functions.php';
+
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use Illuminate\Support\Facades\DB;
@@ -57,4 +59,32 @@ class DatabaseContext implements Context
             }
         }
     }
+
+    /**
+     * @Then the following records in :tableName should be deleted
+     */
+    public function assertDeleted($tableName, TableNode $table)
+    {
+        foreach ($table as $row) {
+            $found = DB::table($tableName)->where($row)->pluck('deleted_at');
+
+            assertNotNull($found);
+
+            if (!$found) {
+                throw new Exception('Row not found in ' . $tableName . ' : ' . json_encode($row));
+            }
+        }
+    }
+
+    /**
+     * @Then there should be :count records in :table
+     */
+    public function assertCountOfDatabaseRecords($count, $table)
+    {
+
+          $records = DB::table($table)->get()->count();
+
+            assertCount($count, $records);
+        }
+
 }
