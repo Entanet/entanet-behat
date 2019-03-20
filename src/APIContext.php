@@ -12,6 +12,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use \Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
 use Illuminate\Foundation\Testing\TestCase;
 use Tests\CreatesApplication;
+use Illuminate\Support\Facades\Artisan;
 use Exception;
 
 /**
@@ -40,7 +41,9 @@ class APIContext extends TestCase implements Context
      */
     public function __construct()
     {
-        if (! $this->app) {
+        parent::__construct();
+
+        if (!$this->app) {
             $this->refreshApplication();
         }
 
@@ -62,6 +65,7 @@ class APIContext extends TestCase implements Context
 
     /**
      * @Then /^the response should be UTF-8 encoded/
+     * @throws
      */
     public function theResponseShouldBeUTF8Encoded()
     {
@@ -73,6 +77,7 @@ class APIContext extends TestCase implements Context
 
     /**
      * @Then /^the response should be HTML/
+     * @throws
      */
     public function theResponseShouldBeHTML()
     {
@@ -201,9 +206,8 @@ class APIContext extends TestCase implements Context
 
         $headers = $this->request->headers;
 
-        $this->response = (array) $headers;
+        $this->response = (array)$headers;
     }
-
 
 
     /**
@@ -219,6 +223,9 @@ class APIContext extends TestCase implements Context
 
     /**
      * @Given I assert :table has a record where :column is :value
+     * @param $table
+     * @param $column
+     * @param $value
      */
     public function dataStoredInTable($table, $column, $value)
     {
@@ -227,6 +234,9 @@ class APIContext extends TestCase implements Context
 
     /**
      * @Given I assert :table does not have a record where :column is :value
+     * @param $table
+     * @param $column
+     * @param $value
      */
     public function dataNotStoredInTable($table, $column, $value)
     {
@@ -268,10 +278,9 @@ class APIContext extends TestCase implements Context
         $code = $this->request->getStatusCode();
         $headers = $this->request->headers;
 
-        $headers = (array) $headers;
+        $headers = (array)$headers;
 
         $response = array_add($headers, 'Status-Code', $code);
-
 
         $this->response = $response;
     }
