@@ -82,9 +82,9 @@ class DatabaseContext implements Context
     public function assertCountOfDatabaseRecords($count, $table)
     {
 
-          $records = DB::table($table)->get()->count();
+        $records = DB::table($table)->get()->count();
 
-            assertCount($count, $records);
-        }
+        assertCount($count, $records);
+    }
 
 }
