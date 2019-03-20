@@ -36,11 +36,12 @@ class LaravelContext implements Context
 
     /**
      * @Given I am running the Seeders
+     * @param $table
      */
     public function iAmSeedingTheDatabase(TableNode $table)
     {
         foreach ($table as $seeder) {
-            Artisan::call('db:seed --class='.$seeder);
+            Artisan::call('db:seed --class=' . $seeder);
         }
     }
 
@@ -55,6 +56,8 @@ class LaravelContext implements Context
     /**
      * @Then I assert job :job was pushed to the queue :queue
      *
+     * @param $job
+     * @param $queue
      * Note: Syntax for Job is JobName::class.
      */
     public function assertJobPushedToQueue($job, $queue)
@@ -63,9 +66,10 @@ class LaravelContext implements Context
     }
 
 
-
     /**
      * @Then I assert job :job was pushed :count times
+     * @param $job
+     * @param $count
      *
      * Note: Syntax for Job is JobName::class.
      */
@@ -76,6 +80,7 @@ class LaravelContext implements Context
 
     /**
      * @Then I assert job :job was not pushed
+     * @param $job
      *
      * Note: Syntax for Job is JobName::class.
      */
@@ -95,6 +100,8 @@ class LaravelContext implements Context
 
     /**
      * @Then I assert a :class notification was sent to :user
+     * @param $notification
+     * @param $user
      *
      * Note: Syntax for Notification is ClassName::class.
      */
@@ -105,6 +112,8 @@ class LaravelContext implements Context
 
     /**
      * @Then I assert a :class notification was not sent to :user
+     * @param $notification
+     * @param $user
      *
      * Note: Syntax for Notification is ClassName::class.
      */
@@ -116,6 +125,8 @@ class LaravelContext implements Context
 
     /**
      * @Then the log file named :file should contain :text
+     * @param $file
+     * @param $text
      */
     public function assertLogContains($file, $text)
     {
