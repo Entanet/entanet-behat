@@ -52,8 +52,6 @@ The table can be converted either to a JSON string or a regular array, and both 
 By doing these conversions and keeping to Behat's native style,
 our "*.feature" files are readable by anyone involved in the project without touching the code.
 
-# **_Notice_**
-At present, this is for API testing through Behat. A UI, Kafka and Database context class will be implemented into this package in the future.
 
 
 
