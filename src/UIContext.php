@@ -7,7 +7,7 @@ use Behat\Gherkin\Node\TableNode;
 use Laracasts\Behat\Context\DatabaseTransactions;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Element\NodeElement;
-
+use Exception;
 
 class UIContext extends MinkContext implements Context
 {
@@ -92,6 +92,7 @@ class UIContext extends MinkContext implements Context
 
     /**
      * @Then I click table header :header
+     * @param $header
      */
     public function iClickTableHeader($header)
     {
@@ -102,7 +103,10 @@ class UIContext extends MinkContext implements Context
 
     /**
      * @Given /^The element "(?P<selector>[^"]*)" should have a css property "(?P<property>[^"]*)" with a value of "(?P<value>[^"]*)"$/
-     *
+     * @param $selector
+     * @param $property
+     * @param $value
+     * @throws
      */
     public function assertElementHasCssValue($selector, $property, $value)
     {
@@ -123,14 +127,12 @@ class UIContext extends MinkContext implements Context
      * Determine if a Mink NodeElement contains a specific css rule attribute value.
      *
      * @param NodeElement $element
-     *   NodeElement previously selected with $this->getSession()->getPage()->find().
      * @param string $property
-     *   Name of the CSS property, such as "visibility".
-     * @param string $value
-     *   Value of the specified rule, such as "hidden".
      *
-     * @return NodeElement|bool
-     *   The NodeElement selected if true, FALSE otherwise.
+     * @param string $value
+     *
+     * @return bool
+     *
      */
     protected function elementHasCSSValue($element, $property, $value)
     {
@@ -161,16 +163,24 @@ class UIContext extends MinkContext implements Context
 
     /**
      * @Then I click the :button on the row that contains :rowText
+     * @throws
      */
     public function clickButtonInRowByText($button, $rowText)
     {
-       $this->row = $this->findRowByText($rowText);
+        $this->row = $this->findRowByText($rowText);
 
-       $this->row->pressButton($button);
+        try {
+            $this->row->pressButton($button);
+        } catch
+        (Exception $e) {
+            throw new Exception("Could not find button $button.");
+        }
     }
+
 
     /**
      * @Then I assert the row that contains :rowText has class :css
+     * @param $rowText
      */
     public function assertCssInsideRow($rowText, $css)
     {
@@ -180,13 +190,14 @@ class UIContext extends MinkContext implements Context
     }
 
     /**
-     * Saving a screenshot
-     * @When I save a screenshot to :filename
+     * Saving a screen shot
+     * @When I save a screen shot to :filename
+     * @param $filename
      */
     public function iSaveAScreenshotIn($filename)
     {
         sleep(1);
-        $this->saveScreenshot($filename, __DIR__.'/../..');
+        $this->saveScreenshot($filename, __DIR__ . '/../..');
     }
 
     /**
@@ -200,6 +211,9 @@ class UIContext extends MinkContext implements Context
 
     /**
      * @Then I expect CSS locator :locator has text :text
+     * @param $locator
+     * @param $text
+     * @return bool
      */
     public function getText($locator, $text)
     {
@@ -211,13 +225,51 @@ class UIContext extends MinkContext implements Context
     }
 
     /**
+     * @When /^(?:|I )should see "([^"]*)" in popup$/
+     *
+     * @param $message
+     *
+     * @return bool
+     */
+    public function assertPopupMessageText($message)
+    {
+        return $message == $this->getSession()->getDriver()->getWebDriverSession()->getAlert_text();
+    }
+
+    /**
+     * @Then I fill in the pop up with :text
+     * @param $text
+     */
+    public function fillInReason($text)
+    {
+        $this->getSession()->getDriver()->getWebDriverSession()->postAlert_text(array("text" => $text));
+        $this->getSession()->getDriver()->getWebDriverSession()->accept_alert();
+        $this->waitForJavaScript();
+    }
+
+
+    /**
+     * @Then I assert the :element has class :class
+     * @param $selector
+     * @param $class
+     */
+    public function assertElementHasClass($selector, $class)
+    {
+        $page = $this->getSession()->getPage();
+        $element = $page->find('named', array('id', $selector));
+        assertTrue(!$element->hasClass($class));
+    }
+
+    /**
      * @Then I ensure the :toggle is checked and has text :text
+     * @param $toggle
+     * @param $text
      */
     public function theCheckBoxIsChecked($toggle, $text)
     {
-       $switch = $this->getText($toggle, $text);
+        $switch = $this->getText($toggle, $text);
 
-        if($switch == false) {
+        if ($switch == false) {
             $this->getPage()->find('css', $toggle)->press();
         }
     }
@@ -241,6 +293,8 @@ class UIContext extends MinkContext implements Context
 
     /**
      * @When I click the :selector element
+     * @param $selector
+     * @throws
      */
     public function iClickTheElement($selector)
     {
@@ -256,18 +310,36 @@ class UIContext extends MinkContext implements Context
     }
 
     /**
+     * @Given I scroll the window to :x :y
+     * @throws
+     */
+    public function iScrollToXY($x, $y)
+    {
+        try {
+            $this->getSession()->executeScript("(function(){window.scrollTo($x, $y);})();");
+        } catch (Exception $e) {
+            throw new \Exception("ScrollIntoView failed");
+        }
+    }
+
+
+    /**
      * UNIFY TEMPLATE RELATED FUNCTIONS
      */
 
 
-
-
     /**
      * @Then I go to the :link via the Menu
+     * @param $link
+     * @throws
      */
     public function iGoToLinkViaMenu($link)
     {
-        $this->iClickTheElement('#menu');
+        try {
+            $this->iClickTheElement('#menu');
+        } catch (Exception $e) {
+            throw new Exception('Menu not found. Page loader was likely present at the time.');
+        }
         $this->clickLink($link);
         $this->javascriptWait;
     }
