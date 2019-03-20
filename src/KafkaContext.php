@@ -40,15 +40,22 @@ class KafkaContext implements Context
 
     /**
      * @BeforeScenario
+     * @throws
      */
     public function setUp()
     {
         $this->adapter = \Mockery::mock('PubSub');
-        $this->setupFakeSubscribers();
+        try {
+            $this->setupFakeSubscribers();
+        } catch (\ReflectionException $e) {
+            throw new \ReflectionException('Could not set up subscribers.');
+        }
     }
 
     /**
      * @When The following events are published to :topic
+     * @param $topic
+     * @param TableNode $table
      */
     public function theFollowingEventsArePublishedTo($topic, TableNode $table)
     {
@@ -65,6 +72,9 @@ class KafkaContext implements Context
 
     /**
      * @Then The following events should be published to :topic
+     * @param $topic
+     * @param TableNode $table
+     * @throws
      */
     public function theFollowingEventsShouldBePublishedTo($topic, TableNode $table)
     {
