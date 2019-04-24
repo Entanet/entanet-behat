@@ -2,12 +2,9 @@
 
 namespace Entanet\Behat;
 
-use PHPUnit\Framework\Assert;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use Illuminate\Support\Facades\Log;
 use Mockery;
-use App;
 use Superbalist\PubSub\Adapters\LocalPubSubAdapter;
 use Exception;
 use Superbalist\PubSub\PubSubAdapterInterface;
@@ -44,7 +41,8 @@ class KafkaContext implements Context
      */
     public function setUp()
     {
-        $this->adapter = \Mockery::mock('PubSub');
+        $this->adapter = resolve(PubSubAdapterInterface::class);
+
         try {
             $this->setupFakeSubscribers();
         } catch (\ReflectionException $e) {

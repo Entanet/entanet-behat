@@ -4,8 +4,8 @@ namespace Entanet\Behat;
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use Illuminate\Notifications\Notification;
-use Illuminate\Queue\Queue;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Artisan;
 
 class LaravelContext implements Context

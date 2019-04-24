@@ -12,8 +12,8 @@ class BehatServiceProvider extends ServiceProvider
             __DIR__.'/.env.behat' => base_path('.env.behat')
         ]);
 
-	$this->publishes([
-	    __DIR__.'/behat.yml' => base_path('behat.yml')
-	]);
+        $this->publishes([
+            __DIR__.'/behat.yml' => base_path('behat.yml')
+        ]);
     }
 }

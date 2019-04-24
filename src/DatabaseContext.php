@@ -2,8 +2,6 @@
 
 namespace Entanet\Behat;
 
-require_once __DIR__ . '/../../../phpunit/phpunit/src/Framework/Assert/Functions.php';
-
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
 use Illuminate\Support\Facades\DB;
@@ -68,7 +66,7 @@ class DatabaseContext implements Context
         foreach ($table as $row) {
             $found = DB::table($tableName)->where($row)->pluck('deleted_at');
 
-            assertNotNull($found);
+            Assert::assertNotNull($found);
 
             if (!$found) {
                 throw new Exception('Row not found in ' . $tableName . ' : ' . json_encode($row));
@@ -84,7 +82,7 @@ class DatabaseContext implements Context
 
         $records = DB::table($table)->get()->count();
 
-        assertCount($count, $records);
+        Assert::assertCount($count, $records);
     }
 
 }

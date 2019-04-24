@@ -2,14 +2,13 @@
 
 namespace Entanet\Behat;
 
-require_once __DIR__ . '/../../../phpunit/phpunit/src/Framework/Assert/Functions.php';
-
+use PHPUnit\Framework\Assert;
 use Behat\Behat\Context\Context;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Database\Eloquent\Model;
 use Behat\Gherkin\Node\TableNode;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use \Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
+use Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
 use Illuminate\Foundation\Testing\TestCase;
 use Tests\CreatesApplication;
 use Illuminate\Support\Facades\Artisan;
@@ -133,8 +132,8 @@ class APIContext extends TestCase implements Context
 
         foreach ($this->payload as $key => $val) {
 
-            assertContains($key, $this->response);
-            assertContains($val, $this->response);
+            Assert::assertContains($key, $this->response);
+            Assert::assertContains($val, $this->response);
         }
 
         $this->response = json_encode($this->response);
@@ -218,7 +217,7 @@ class APIContext extends TestCase implements Context
     {
         $statusCode = $this->request->getStatusCode();
 
-        assertEquals($code, $statusCode);
+        Assert::assertEquals($code, $statusCode);
     }
 
     /**
