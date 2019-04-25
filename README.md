@@ -1,34 +1,22 @@
-# **EntaNet Behat**
-This package is designed specifically for EntaNet's Software QA department to aid with automation of features.
+# **Entanet Behat**
+This package is designed specifically for Entanet's Software QA department to aid with automation of features.
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
+Require the entanet behat package
 ```
-composer require entanet/entanet-behat
+composer require-dev entanet/entanet-behat
+```
+
+Add the following to the config/app.php providers array
+```
+Superbalist\LaravelPubSub\PubSubServiceProvider::class
+```
+
+Publish the behat environment and YAML file
+```
 php artisan vendor:publish --provider="Entanet\Behat\BehatServiceProvider"
 ```
-
-Publishing vendor files will create a behat.yml with suites initialized
-and a .env.behat with a sample URL and an in memory database.
-
-After running this, go to your _config/app.php_ file and 
-add this line to the "Providers" array:
-```
-'PubSub' => Superbalist\PubSub\Adapters\LocalPubSubAdapter::class,
-```
-
-Finally, go to your _AppServiceProvider.php_ and make a binding
-between the PubSub interface and the LocalAdapter:
-
-```
-  public function register()
-    {
-        $this->app->bind('Superbalist\PubSub\PubSubAdapterInterface', 'Superbalist\PubSub\Adapters\LocalPubSubAdapter');
-    }
-```
-
 
 # **The Package**
 
