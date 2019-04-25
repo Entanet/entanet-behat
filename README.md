@@ -5,7 +5,7 @@ This package is designed specifically for Entanet's Software QA department to ai
 
 Require the entanet behat package
 ```
-composer require-dev entanet/entanet-behat
+composer require entanet/entanet-behat --dev
 ```
 
 Add the following to the config/app.php providers array
