@@ -19,7 +19,6 @@ use Exception;
  */
 class APIContext extends TestCase implements Context
 {
-    use DatabaseMigrations;
     use CreatesApplication;
     use MakesHttpRequests;
 
@@ -55,9 +54,6 @@ class APIContext extends TestCase implements Context
         Facade::clearResolvedInstances();
 
         Model::setEventDispatcher($this->app['events']);
-
-        Artisan::call('migrate:fresh');
-        Artisan::call('db:seed');
 
         $this->setUpHasRun = true;
     }
