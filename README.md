@@ -1,48 +1,128 @@
 # **Entanet Behat**
 This package is designed specifically for Entanet's Software QA department to aid with automation of features.
 
-### Installing
+# Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-
+Require the entanet behat package
 ```
-composer require entanet/entanet-behat
+composer require entanet/entanet-behat --dev
+```
+
+Add the following to the config/app.php providers array
+```
+Superbalist\LaravelPubSub\PubSubServiceProvider::class
+```
+
+Publish the behat environment and YAML file
+```
 php artisan vendor:publish --provider="Entanet\Behat\BehatServiceProvider"
 ```
 
-# **The Package**
-Ensure Behat is initialized within your project before installing.
+Check the commands available
+```
+vendor/bin/behat -dl
+```
 
-You will find an "API_Context" class within the /src directory.
-This extends Imbo's Behat API Extension 
-_(https://github.com/imbo/behat-api-extension)_
-and uses Guzzle as the client handler. 
+# Usage
 
-Our class requires one change out of the box, which is the "$requestPath"
-variable in the constructor. Here, replace the placeholder with your base API url.
+## Table of Contents
 
-The class is autoloaded, so just extend the class in your FeatureContext class.
+### Running
+- [Pipeline Suite](#pipeline-suite)
+- [UI Suite](#ui-suite)
 
-There is a directory within /src called "examples" which will show you all the capabilities of the "API_Context" class.
-As the package evolves, so will the examples - So keep them in mind when there is a version update!
+### Database
+- [Insert a row](#insert-a-row)
+- [Check a row exists](#check-a-row-exists)
 
-# **_Advantages_**
-This package leverages already established packages with the aim
-of making your "*.feature" files **clean**.
+### Kafka
+- [Publish an event](#publish-an-event)
+- [Check an event](#check-an-event)
 
-Using Behat's TableNode _(http://behat.org/en/latest/user_guide/writing_scenarios.html)_
-We can pass values through to endpoints, and make assertions on the responses we are returned.
+#### Pipeline Suite
+This includes Kafka, Database and API testing. To be run as part of the deployment pipeline. 
+A failed test will break a build. All artisan commands with pubsub will be run automatically 
+for each scenario.
+```
+vendor/bin/behat --suite=pipeline
+```
 
-The table can be converted either to a JSON string or a regular array, and both html body and html header values can be included in the same tables.
+#### UI Suite
+This includes UI testing. To be run locally and not within a pipeline.
+```
+vendor/bin/behat --suite=ui
+```
 
-By doing these conversions and keeping to Behat's native style,
-our "*.feature" files are readable by anyone involved in the project without touching the code.
+#### Insert a row
+Seed the database with rows
+```gherkin
+Given I have the following in the "users" table
+| name | email                |
+| Tom  | tomos.lloyd@enta.net |
+| Ryan | ryan.ralphs@enta.net |
+```
 
-# **_Notice_**
-At present, this is for API testing through Behat. A UI, Kafka and Database context class will be implemented into this package in the future.
+#### Check a row exists
+Check a row exists after running some code
+```gherkin
+Then I should have the following in the "users" table
+| name | email                |
+| Tom  | tomos.lloyd@enta.net |
+| Ryan | ryan.ralphs@enta.net |
+```
 
+#### Publish an event
+Publish an event to a topic
+```gherkin
+When The following events are published to "user-created"
+| name | email                |
+| Tom  | tomos.lloyd@enta.net |
+| Ryan | ryan.ralphs@enta.net |
+```
 
+#### Check an event
+Check an event has been created
+```gherkin
+Then The following events should be published to "user-created"
+| name | email                |
+| Tom  | tomos.lloyd@enta.net |
+| Ryan | ryan.ralphs@enta.net |
+```
 
+# Examples
+Consume an event and check that a row exists in the database
+```gherkin
+Feature: Store a person in the database
+  In order to manipulate people in this application
+  As people are created in other systems
+  We will need to listen people events and store them in the database
 
+  Scenario: Listen to person created event and store in the people table
+    When The following events are published to "user-created"
+      | name | email                 |
+      | Tom  | tomos.lloyd@enta.net  |
+      | Ryan | ryan.ralphs@enta.net  |
+    Then I should have the following in the "users" table
+      | name | email                 |
+      | Tom  | tomos.lloyd@enta.net  |
+      | Ryan | ryan.ralphs@enta.net  |
+```
+
+Consume an event and check that another event was published
+```gherkin
+Feature: Store a person in the database
+  In order to manipulate people in this application
+  As people are created in other systems
+  We will need to listen people events and store them in the database
+
+  Scenario: Listen to person created event and store in the people table
+    When The following events are published to "user-created"
+      | name | email                 |
+      | Tom  | tomos.lloyd@enta.net  |
+      | Ryan | ryan.ralphs@enta.net  |
+    Then I should have the following in the "users" table
+      | name | email                 |
+      | Tom  | tomos.lloyd@enta.net  |
+      | Ryan | ryan.ralphs@enta.net  |
+```
 
