@@ -46,6 +46,16 @@ class LaravelContext implements Context
     }
 
     /**
+     * @Given I am running the :seeder seeder
+     * @param $seeder
+     * Pass in the full name of the seeder e.g 'AccountSeeder'
+     */
+    public function iAmRunningTheSeeder($seeder)
+    {
+        Artisan::call("db:seed", ['--class' => $seeder]);
+    }
+
+    /**
      * @Then I assert nothing was pushed to the queue
      */
     public function assertNothingPushedToQueue()
