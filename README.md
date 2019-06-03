@@ -1,59 +1,128 @@
-# **EntaNet Behat**
-This package is designed specifically for EntaNet's Software QA department to aid with automation of features.
+# **Entanet Behat**
+This package is designed specifically for Entanet's Software QA department to aid with automation of features.
 
-### Installing
+# Installing
 
-A step by step series of examples that tell you how to get a development env running
-
+Require the entanet behat package
 ```
-composer require entanet/entanet-behat
+composer require entanet/entanet-behat --dev
+```
+
+Add the following to the config/app.php providers array
+```
+Superbalist\LaravelPubSub\PubSubServiceProvider::class
+```
+
+Publish the behat environment and YAML file
+```
 php artisan vendor:publish --provider="Entanet\Behat\BehatServiceProvider"
 ```
 
-Publishing vendor files will create a behat.yml with suites initialized
-and a .env.behat with a sample URL and an in memory database.
-
-After running this, go to your _config/app.php_ file and 
-add this line to the "Providers" array:
+Check the commands available
 ```
-'PubSub' => Superbalist\PubSub\Adapters\LocalPubSubAdapter::class,
+vendor/bin/behat -dl
 ```
 
-Finally, go to your _AppServiceProvider.php_ and make a binding
-between the PubSub interface and the LocalAdapter:
+# Usage
 
+## Table of Contents
+
+### Running
+- [Pipeline Suite](#pipeline-suite)
+- [UI Suite](#ui-suite)
+
+### Database
+- [Insert a row](#insert-a-row)
+- [Check a row exists](#check-a-row-exists)
+
+### Kafka
+- [Publish an event](#publish-an-event)
+- [Check an event](#check-an-event)
+
+#### Pipeline Suite
+This includes Kafka, Database and API testing. To be run as part of the deployment pipeline. 
+A failed test will break a build. All artisan commands with pubsub will be run automatically 
+for each scenario.
 ```
-  public function register()
-    {
-        $this->app->bind('Superbalist\PubSub\PubSubAdapterInterface', 'Superbalist\PubSub\Adapters\LocalPubSubAdapter');
-    }
+vendor/bin/behat --suite=pipeline
 ```
 
+#### UI Suite
+This includes UI testing. To be run locally and not within a pipeline.
+```
+vendor/bin/behat --suite=ui
+```
 
-# **The Package**
+#### Insert a row
+Seed the database with rows
+```gherkin
+Given I have the following in the "users" table
+| name | email                |
+| Tom  | tomos.lloyd@enta.net |
+| Ryan | ryan.ralphs@enta.net |
+```
 
-Aimed to aid with testing, the package includes API, Database, UI, Kafka and 
-Laravel Context files to test with that can be used out of the box. 
+#### Check a row exists
+Check a row exists after running some code
+```gherkin
+Then I should have the following in the "users" table
+| name | email                |
+| Tom  | tomos.lloyd@enta.net |
+| Ryan | ryan.ralphs@enta.net |
+```
 
-While we use in memory databases for DatabaseContext and mockery for Kafka, our API testing class 
-will instance an application by leveraging Illuminate's Kernel classes so no real
-call outs are ever made, and this allows us to use clean Laravel Feature Test style
-assertions.
+#### Publish an event
+Publish an event to a topic
+```gherkin
+When The following events are published to "user-created"
+| name | email                |
+| Tom  | tomos.lloyd@enta.net |
+| Ryan | ryan.ralphs@enta.net |
+```
 
-# **_Advantages_**
-This package leverages already established packages with the aim
-of making your "*.feature" files **clean**.
+#### Check an event
+Check an event has been created
+```gherkin
+Then The following events should be published to "user-created"
+| name | email                |
+| Tom  | tomos.lloyd@enta.net |
+| Ryan | ryan.ralphs@enta.net |
+```
 
-Using Behat's TableNode _(http://behat.org/en/latest/user_guide/writing_scenarios.html)_
-We can pass values through to endpoints, and make assertions on the responses we are returned.
+# Examples
+Consume an event and check that a row exists in the database
+```gherkin
+Feature: Store a person in the database
+  In order to manipulate people in this application
+  As people are created in other systems
+  We will need to listen people events and store them in the database
 
-The table can be converted either to a JSON string or a regular array, and both html body and html header values can be included in the same tables.
+  Scenario: Listen to person created event and store in the people table
+    When The following events are published to "user-created"
+      | name | email                 |
+      | Tom  | tomos.lloyd@enta.net  |
+      | Ryan | ryan.ralphs@enta.net  |
+    Then I should have the following in the "users" table
+      | name | email                 |
+      | Tom  | tomos.lloyd@enta.net  |
+      | Ryan | ryan.ralphs@enta.net  |
+```
 
-By doing these conversions and keeping to Behat's native style,
-our "*.feature" files are readable by anyone involved in the project without touching the code.
+Consume an event and check that another event was published
+```gherkin
+Feature: Store a person in the database
+  In order to manipulate people in this application
+  As people are created in other systems
+  We will need to listen people events and store them in the database
 
-
-
-
-
+  Scenario: Listen to person created event and store in the people table
+    When The following events are published to "user-created"
+      | name | email                 |
+      | Tom  | tomos.lloyd@enta.net  |
+      | Ryan | ryan.ralphs@enta.net  |
+    Then I should have the following in the "users" table
+      | name | email                 |
+      | Tom  | tomos.lloyd@enta.net  |
+      | Ryan | ryan.ralphs@enta.net  |
+```
 

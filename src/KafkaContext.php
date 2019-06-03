@@ -2,12 +2,10 @@
 
 namespace Entanet\Behat;
 
-use PHPUnit\Framework\Assert;
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use Illuminate\Support\Facades\Log;
-use Mockery;
 use App;
+use Mockery;
 use Superbalist\PubSub\Adapters\LocalPubSubAdapter;
 use Exception;
 use Superbalist\PubSub\PubSubAdapterInterface;
@@ -22,7 +20,7 @@ class KafkaContext implements Context
     /**
      * @var PubSubAdapterInterface
      */
-    protected $adapter;
+    public static $adapter;
 
     /**
      * @var Keep hold of published events
@@ -36,6 +34,7 @@ class KafkaContext implements Context
     {
         $mock = Mockery::mock(LocalPubSubAdapter::class)->makePartial();
         App::instance(PubSubAdapterInterface::class, $mock);
+        KafkaContext::$adapter = app(PubSubAdapterInterface::class);
     }
 
     /**
@@ -44,7 +43,8 @@ class KafkaContext implements Context
      */
     public function setUp()
     {
-        $this->adapter = \Mockery::mock('PubSub');
+        //$this->adapter = app(PubSubAdapterInterface::class);
+
         try {
             $this->setupFakeSubscribers();
         } catch (\ReflectionException $e) {
@@ -66,7 +66,7 @@ class KafkaContext implements Context
                 }
             }
 
-            $this->adapter->publish($topic, $row);
+            KafkaContext::$adapter->publish($topic, $row);
         }
     }
 
@@ -133,7 +133,7 @@ class KafkaContext implements Context
     {
         // Reset events
         KafkaContext::$events = array();
-        $mock = $this->adapter;
+        $mock = KafkaContext::$adapter;
 
         // Make the subscribers property visible
         $reflect = new ReflectionClass($mock);

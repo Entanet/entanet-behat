@@ -4,8 +4,8 @@ namespace Entanet\Behat;
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\TableNode;
-use Illuminate\Notifications\Notification;
-use Illuminate\Queue\Queue;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Artisan;
 
 class LaravelContext implements Context
@@ -43,6 +43,16 @@ class LaravelContext implements Context
         foreach ($table as $seeder) {
             Artisan::call('db:seed --class=' . $seeder);
         }
+    }
+
+    /**
+     * @Given I am running the :seeder seeder
+     * @param $seeder
+     * Pass in the full name of the seeder e.g 'AccountSeeder'
+     */
+    public function iAmRunningTheSeeder($seeder)
+    {
+        Artisan::call("db:seed", ['--class' => $seeder]);
     }
 
     /**

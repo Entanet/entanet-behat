@@ -1,0 +1,18 @@
+default:
+  suites:
+    pipeline:
+      paths: [ "%paths.base%/features/pipeline" ]
+      contexts:
+        - Entanet\Behat\APIContext
+        - Entanet\Behat\KafkaContext
+        - Entanet\Behat\LaravelContext
+        - Entanet\Behat\DatabaseContext
+    ui:
+      paths: [ "%paths.base%/features/ui" ]
+      contexts:
+        - Entanet\Behat\UIContext
+  extensions:
+    Laracasts\Behat:
+    Behat\MinkExtension:
+      default_session: laravel
+      laravel: ~
