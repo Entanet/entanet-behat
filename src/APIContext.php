@@ -11,8 +11,13 @@ use Behat\Gherkin\Node\TableNode;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use \Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
 use Illuminate\Foundation\Testing\TestCase;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 use Tests\CreatesApplication;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\App;
+use Mockery;
+use ReflectionClass;
 use Exception;
 
 /**
@@ -28,6 +33,7 @@ class APIContext extends TestCase implements Context
     public $_client;
     protected $request;
     protected $app;
+    protected $mockResult;
     protected $payload;
     protected $requestPath;
     private $auth;
@@ -60,6 +66,11 @@ class APIContext extends TestCase implements Context
         Artisan::call('migrate:fresh');
         Artisan::call('db:seed');
 
+        $mock = Mockery::mock(\GuzzleHttp\Client::class);
+        $mock->shouldReceive('post')->andReturn([]);
+        $this->_client = App::instance(\GuzzleHttp\Client::class, $mock);
+        App::instance(\GuzzleHttp\Client::class, $mock);
+
         $this->setUpHasRun = true;
     }
 
@@ -85,6 +96,81 @@ class APIContext extends TestCase implements Context
         if (empty($data)) {
             throw new Exception("Response was not HTML\n" . $this->response);
         }
+    }
+
+    /**
+     * @Then I catch the API request sent
+     */
+    public function makeMockRequestToGuzzle()
+    {
+        $reflection = new ReflectionClass($this->_client);
+        $property = $reflection->getProperty('_mockery_receivedMethodCalls');
+        $property->setAccessible(true);
+        $methodCalls = $property->getValue($this->_client);
+
+        $methodCallsReflection = new ReflectionClass($methodCalls);
+        $property = $methodCallsReflection->getProperty('methodCalls');
+        $property->setAccessible(true);
+
+        $methodCalls = $property->getValue($methodCalls);
+
+        $calls = array();
+        foreach ($methodCalls as $methodCall) {
+            $reflection = new ReflectionClass($methodCall);
+            $property = $reflection->getProperty('args');
+            $property->setAccessible(true);
+            $call = $property->getValue($methodCall);
+            $calls[] = $call;
+
+            dump($call);
+            $results = [];
+
+            array_push($results, $call[0]);
+            array_push($results, $call[1]['json'][0]);
+
+
+            $this->mockResult = $results;
+
+            $logging = new Logger('behat');
+            $logging->pushHandler(new StreamHandler(storage_path('logs/behat.log')), Logger::INFO);
+            $logging->info('Behat Tests:', $this->mockResult);
+        }
+    }
+
+    /**
+     * @Then the url visited should be :url
+     */
+    public function theMockResultDestination($url)
+    {
+        assertEquals($url, $this->mockResult[0]);
+    }
+
+    /**
+     * @Then the request should contain:
+     */
+    public function theMockResultContains(TableNode $table)
+    {
+        $this->assertLogContains($table);
+    }
+
+    private function assertLogContains(TableNode $table)
+    {
+
+        $data = $this->tableToArray($table);
+
+        $information = file_get_contents(storage_path('logs/behat.log'));
+
+        foreach ($data as $key => $val) {
+            assertContains($key, $information);
+            assertContains($val, $information);
+        }
+        $this->destroyLog();
+    }
+
+    public function destroyLog()
+    {
+        $filesystem = new \Illuminate\Filesystem\Filesystem;
+        $filesystem->delete(storage_path('logs/behat.log'));
     }
 
     /**
