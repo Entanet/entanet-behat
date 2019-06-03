@@ -119,8 +119,6 @@ class APIContext extends TestCase implements Context
             $property->setAccessible(true);
             $call = $property->getValue($methodCall);
             $calls[] = $call;
-
-            dump($call);
             $results = [];
 
             array_push($results, $call[0]);
