@@ -46,6 +46,16 @@ class LaravelContext implements Context
     }
 
     /**
+     * @Given I am running the Kafka subscriber :subscriber
+     * @param $table
+     */
+
+     public function iAmRunningTheKafkaSubscribers($subscriber)
+     {
+        Artisan::call('subscribe:' . $subscriber);
+     }
+
+    /**
      * @Given I am running the :seeder seeder
      * @param $seeder
      * Pass in the full name of the seeder e.g 'AccountSeeder'
