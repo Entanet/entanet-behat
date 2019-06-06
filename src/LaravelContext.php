@@ -47,7 +47,6 @@ class LaravelContext implements Context
 
     /**
      * @Given I am running the Kafka subscriber :subscriber
-     * @param $table
      */
 
      public function iAmRunningTheKafkaSubscribers($subscriber)
