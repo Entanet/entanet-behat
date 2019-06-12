@@ -324,6 +324,21 @@ class UIContext extends MinkContext implements Context
 
 
     /**
+     *@Given I fill in :field with a unique string 
+     *@param $field 
+     * str_replace is used to remove special characters
+     */
+    public function iFillFieldWithAUniqueString($field)
+    {
+        $uniqueString = substr(md5(rand()), 0, 7);
+        $carbonDate = Carbon::now()->toTimeString();
+        $formatString = str_replace( array( '\'', '"', ',' , ';', '<', '>', '-', ':' ), '', $carbonDate.$uniqueString);
+        $this->fillField($field, $formatString);
+    }
+     
+
+
+    /**
      * UNIFY TEMPLATE RELATED FUNCTIONS
      */
 
