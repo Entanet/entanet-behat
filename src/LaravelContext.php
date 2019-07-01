@@ -15,6 +15,10 @@ class LaravelContext implements Context
      */
     public static function prepare()
     {
+        Artisan::call('migrate:fresh');
+        Artisan::call('db:seed');
+
+        
         Notification::fake();
         Queue::fake();
 
