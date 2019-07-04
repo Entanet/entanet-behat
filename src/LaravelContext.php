@@ -19,13 +19,6 @@ class LaravelContext implements Context
 
         Notification::fake();
         Queue::fake();
-
-        $commands = Artisan::all();
-        foreach ($commands as $command) {
-            if (property_exists($command, 'pubsub')) {
-                Artisan::call($command->getName());
-            }
-        }
     }
 
     /**
@@ -34,6 +27,15 @@ class LaravelContext implements Context
     public function setUp()
     {
 
+    }
+
+    /**
+     * @Given I am running the :command command
+     * Pass in the name of the command after 'php artisan'
+     */
+    public function iAmRunningTheCommand($command)
+    {
+        Artisan::call('php artisan' . $command);
     }
 
     /**
@@ -46,6 +48,15 @@ class LaravelContext implements Context
             Artisan::call('db:seed --class=' . $seeder);
         }
     }
+
+    /**
+     * @Given I am running the Kafka subscriber :subscriber
+     */
+
+     public function iAmRunningTheKafkaSubscribers($subscriber)
+     {
+        Artisan::call('subscribe:' . $subscriber);
+     }
 
     /**
      * @Given I am running the :seeder seeder
