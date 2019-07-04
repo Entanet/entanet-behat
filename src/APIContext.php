@@ -62,7 +62,6 @@ class APIContext extends TestCase implements Context
         Model::setEventDispatcher($this->app['events']);
 
         Artisan::call('migrate:fresh');
-        Artisan::call('db:seed');
 
         $mock = Mockery::mock(\GuzzleHttp\Client::class);
         $mock->shouldReceive('post')->andReturn([]);
