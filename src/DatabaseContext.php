@@ -17,6 +17,8 @@ use InvalidArgumentException;
  */
 class DatabaseContext implements Context
 {
+
+    public $model;
     /**
      * Migrate refresh
      */
@@ -43,6 +45,7 @@ class DatabaseContext implements Context
             }
         }
     }
+
 
     /**
      * @Then I should have the following in the :tableName table
@@ -73,6 +76,7 @@ class DatabaseContext implements Context
             }
         }
     }
+
 
     /**
      * @Then there should be :count records in :table

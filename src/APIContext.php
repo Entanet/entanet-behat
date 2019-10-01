@@ -29,6 +29,7 @@ class APIContext extends TestCase implements Context
 
     public $response;
     public $_client;
+    public $model;
     protected $request;
     protected $app;
     protected $mockResult;
@@ -93,6 +94,36 @@ class APIContext extends TestCase implements Context
         if (empty($data)) {
             throw new Exception("Response was not HTML\n" . $this->response);
         }
+    }
+
+
+
+    /**
+     * @Given I have a basic model with the following keys and values:
+     */
+    public function iHaveAnObject(TableNode $table)
+    {
+        $this->model = (object) new StdClass();
+
+        $values = $this->tableToArray($table);
+
+        foreach($values as $key => $val) {
+            $this->model->$key = $val;
+        }
+
+        return $this->model;
+    }
+
+
+    /**
+     * @And I store the object in the :tableName database table
+     * @param $tableName
+     */
+    public function insertObject($tableName)
+    {
+        $this->model = (array) $this->model;
+
+        DB::table($tableName)->insert($this->model);
     }
 
     /**
