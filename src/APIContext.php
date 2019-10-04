@@ -305,4 +305,16 @@ class APIContext extends TestCase implements Context
 
         $this->response = json_encode($this->request);
     }
+    
+    /**
+     * Adds basic auth to requests.
+     * @Given /^I am authenticating as "([^"]*)" with "([^"]*)" password$/
+     */
+    
+    public function iAmAuthenticatingAs($user, $pass)
+    {
+        $this->removeHeader('Authorization');
+        $this->authorization = base64_encode($user.':'.$pass);
+        $this->addHeader('Authorization: Basic '.$this->authorization);
+    }
 }
