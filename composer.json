@@ -37,7 +37,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Entanet\\Behat\\InsightsServiceProvider"
+                "Entanet\\Behat\\BehatServiceProvider"
             ]
         }
     }
