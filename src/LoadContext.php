@@ -243,7 +243,7 @@ class LoadContext extends TestCase implements Context
             $this->exception['message'] = $result->exception->getMessage();
             $this->exception['statusCode'] = $result->getStatusCode();
 
-            return $this->returnedCode;
+            return $this->exception;
         }
     }
 
