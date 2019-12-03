@@ -10,6 +10,7 @@ use Laracasts\Behat\Context\Migrator;
 use PHPUnit\Framework\Assert;
 use Exception;
 use InvalidArgumentException;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * Class DatabaseContext
