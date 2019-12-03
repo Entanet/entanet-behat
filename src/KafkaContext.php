@@ -10,6 +10,7 @@ use Superbalist\PubSub\Adapters\LocalPubSubAdapter;
 use Exception;
 use Superbalist\PubSub\PubSubAdapterInterface;
 use ReflectionClass;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * Class KafkaContext
