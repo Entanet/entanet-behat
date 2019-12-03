@@ -53,7 +53,16 @@ class KafkaContext implements Context
     }
 
     /**
-     * @When The following events are published to :topic
+     * @Given I am running the :subscriber Kafka subscriber
+     * @param $subscriber
+     */
+    public function iAmRunningTheKafkaSubscriber($subscriber)
+    {
+        Artisan::call('kafka:subscribe ' . $subscriber);
+    }
+
+    /**
+     * @When the following events are published to :topic
      * @param $topic
      * @param TableNode $table
      */
@@ -61,6 +70,11 @@ class KafkaContext implements Context
     {
         foreach ($table as $row) {
             foreach ($row as $key => $value) {
+                if ($value == 'true') {
+                    $row[$key] = true;
+                } else if ($value == 'false') {
+                    $row[$key] = false;
+                }
                 if (str_contains($key, '.')) {
                     $row = array_merge_recursive($row, $this->convertDotsToArray($key, $value));
                 }
@@ -71,7 +85,7 @@ class KafkaContext implements Context
     }
 
     /**
-     * @Then The following events should be published to :topic
+     * @Then the following events should be published to :topic
      * @param $topic
      * @param TableNode $table
      * @throws

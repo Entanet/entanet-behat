@@ -46,6 +46,15 @@ class DatabaseContext implements Context
         }
     }
 
+    /**
+     * @Given the :tableName table is empty
+     * @param $tableName
+     * @throws Exception
+     */
+    public function theTableIsEmpty($tableName)
+    {
+        Assert::assertEmpty(DB::table($tableName)->get());
+    }
 
     /**
      * @Then I should have the following in the :tableName table
@@ -75,6 +84,15 @@ class DatabaseContext implements Context
                 throw new Exception('Row not found in ' . $tableName . ' : ' . json_encode($row));
             }
         }
+    }
+
+    /**
+     * @Then the :tableName table should be empty
+     * @param $tableName
+     */
+    public function theTableShouldBeEmpty($tableName)
+    {
+        Assert::assertEmpty(DB::table($tableName)->get());
     }
 
 
