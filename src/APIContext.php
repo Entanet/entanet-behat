@@ -187,6 +187,8 @@ class APIContext extends TestCase implements Context
         $information = file_get_contents(storage_path('logs/behat.log'));
 
         foreach ($data as $key => $val) {
+            $key = (string) $key;
+            $val = (string) $val;
             assertContains($key, $information);
             assertContains($val, $information);
         }

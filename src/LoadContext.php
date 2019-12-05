@@ -272,6 +272,8 @@ class LoadContext extends TestCase implements Context
         $table = $this->tableToArray($table);
 
         foreach($table as $key => $val) {
+            $key = (string) $key;
+            $val = (string) $val;
             $this->assertContains($key, $this->exception);
             $this->assertContains($val, $this->exception);
         }
