@@ -11,6 +11,7 @@ use Exception;
 use Superbalist\PubSub\PubSubAdapterInterface;
 use ReflectionClass;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 
 /**
  * Class KafkaContext
@@ -59,7 +60,7 @@ class KafkaContext implements Context
      */
     public function iAmRunningTheKafkaSubscriber($subscriber)
     {
-        Artisan::call('kafka:subscribe ' . $subscriber);
+        Artisan::call('kafka:subscribe', ['alias' => $subscriber]);
     }
 
     /**
@@ -76,7 +77,7 @@ class KafkaContext implements Context
                 } else if ($value == 'false') {
                     $row[$key] = false;
                 }
-                if (str_contains($key, '.')) {
+                if (Str::contains($key, '.')) {
                     $row = array_merge_recursive($row, $this->convertDotsToArray($key, $value));
                 }
             }
@@ -100,13 +101,15 @@ class KafkaContext implements Context
         foreach ($table as $row) {
             $found = false;
 
-            $eventsPublished = $events[$topic];
-            foreach ($eventsPublished as $key => $event) {
-                if ($event == $row) {
-                    $found = true;
+            if (array_key_exists($topic, $events)) {
+                $eventsPublished = $events[$topic];
+                foreach ($eventsPublished as $key => $event) {
+                    if (count(array_intersect_assoc($row, $event)) == count($row)) {
+                        $found = true;
 
-                    // Count each row once
-                    unset($events[$topic][$key]);
+                        // Count each row once
+                        unset($events[$topic][$key]);
+                    }
                 }
             }
 
@@ -116,7 +119,6 @@ class KafkaContext implements Context
             }
         }
     }
-
     /**
      * Helper for turning dots into array
      * @param $key
