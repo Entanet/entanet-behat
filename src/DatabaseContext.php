@@ -11,6 +11,7 @@ use PHPUnit\Framework\Assert;
 use Exception;
 use InvalidArgumentException;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 
 /**
  * Class DatabaseContext
@@ -32,7 +33,7 @@ class DatabaseContext implements Context
     {
         foreach ($table as $row) {
             // Find the model for the table
-            $modelName = 'App\\Models\\' . studly_case(str_singular($tableName));
+            $modelName = 'App\\Models\\' . Str::studly(Str::singular($tableName));
 
             if (!class_exists($modelName)) {
                 throw new Exception('Model does not exist ' . $modelName);
@@ -46,6 +47,7 @@ class DatabaseContext implements Context
             }
         }
     }
+
 
     /**
      * @Given the :tableName table is empty

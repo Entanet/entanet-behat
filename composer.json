@@ -13,6 +13,11 @@
             "name": "Tomos Lloyd",
             "email": "tomos.lloyd@enta.net",
             "role": "Software Development Manager"
+        },
+        {
+            "name": "Adam Humphreys",
+            "email": "adam.humphreys@cityfibre.com",
+            "role": "Junior SDET"
         }
     ],
     "require": {
