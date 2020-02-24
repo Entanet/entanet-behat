@@ -247,8 +247,8 @@ class APIContext extends TestCase implements Context
 
         foreach ($this->payload as $key => $val) {
 
-            Assert::assertContains($key, $this->response);
-            Assert::assertContains($val, $this->response);
+            assertContains($key, $this->response);
+            assertContains($val, $this->response);
         }
 
         $this->response = json_encode($this->response);
@@ -332,7 +332,7 @@ class APIContext extends TestCase implements Context
     {
         $statusCode = $this->request->getStatusCode();
 
-        Assert::assertEquals($code, $statusCode);
+        assertEquals($code, $statusCode);
     }
 
     /**

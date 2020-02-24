@@ -1,5 +1,7 @@
 <?php
 
+
+
 namespace Entanet\Behat;
 
 use Behat\Behat\Context\Context;
@@ -51,12 +53,13 @@ class DatabaseContext implements Context
 
     /**
      * @Given the :tableName table is empty
+     * @Given the :tableName table should be empty
      * @param $tableName
      * @throws Exception
      */
     public function theTableIsEmpty($tableName)
     {
-        Assert::assertEmpty(DB::table($tableName)->get());
+        assertEmpty(DB::table($tableName)->get());
     }
 
     /**
@@ -81,23 +84,13 @@ class DatabaseContext implements Context
         foreach ($table as $row) {
             $found = DB::table($tableName)->where($row)->pluck('deleted_at');
 
-            Assert::assertNotNull($found);
+            assertNotNull($found);
 
             if (!$found) {
                 throw new Exception('Row not found in ' . $tableName . ' : ' . json_encode($row));
             }
         }
     }
-
-    /**
-     * @Then the :tableName table should be empty
-     * @param $tableName
-     */
-    public function theTableShouldBeEmpty($tableName)
-    {
-        Assert::assertEmpty(DB::table($tableName)->get());
-    }
-
 
     /**
      * @Then there should be :count records in :table
@@ -107,7 +100,7 @@ class DatabaseContext implements Context
 
         $records = DB::table($table)->get()->count();
 
-        Assert::assertCount($count, $records);
+        assertCount($count, $records);
     }
 
 }

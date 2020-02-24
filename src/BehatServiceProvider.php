@@ -1,5 +1,7 @@
 <?php
 
+
+
 namespace Entanet\Behat;
 
 use Illuminate\Support\ServiceProvider;
