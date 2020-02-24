@@ -58,8 +58,8 @@ Seed the database with rows
 ```gherkin
 Given I have the following in the "users" table
 | name | email                |
-| Tom  | tomos.lloyd@enta.net |
-| Ryan | ryan.ralphs@enta.net |
+| Tom  | tomos.lloyd@cityfibre.com |
+| Ryan | ryan.ralphs@cityfibre.com |
 ```
 
 #### Check a row exists
@@ -67,8 +67,8 @@ Check a row exists after running some code
 ```gherkin
 Then I should have the following in the "users" table
 | name | email                |
-| Tom  | tomos.lloyd@enta.net |
-| Ryan | ryan.ralphs@enta.net |
+| Tom  | tomos.lloyd@cityfibre.com |
+| Ryan | ryan.ralphs@cityfibre.com |
 ```
 
 #### Publish an event
@@ -76,8 +76,8 @@ Publish an event to a topic
 ```gherkin
 When The following events are published to "user-created"
 | name | email                |
-| Tom  | tomos.lloyd@enta.net |
-| Ryan | ryan.ralphs@enta.net |
+| Tom  | tomos.lloyd@cityfibre.com |
+| Ryan | ryan.ralphs@cityfibre.com |
 ```
 
 #### Check an event
@@ -85,8 +85,8 @@ Check an event has been created
 ```gherkin
 Then The following events should be published to "user-created"
 | name | email                |
-| Tom  | tomos.lloyd@enta.net |
-| Ryan | ryan.ralphs@enta.net |
+| Tom  | tomos.lloyd@cityfibre.com |
+| Ryan | ryan.ralphs@cityfibre.com |
 ```
 
 # Examples
@@ -118,11 +118,11 @@ Feature: Store a person in the database
   Scenario: Listen to person created event and store in the people table
     When The following events are published to "user-created"
       | name | email                 |
-      | Tom  | tomos.lloyd@enta.net  |
-      | Ryan | ryan.ralphs@enta.net  |
+      | Tom  | tomos.lloyd@cityfibre.com  |
+      | Ryan | ryan.ralphs@cityfibre.com  |
     Then I should have the following in the "users" table
       | name | email                 |
-      | Tom  | tomos.lloyd@enta.net  |
-      | Ryan | ryan.ralphs@enta.net  |
+      | Tom  | tomos.lloyd@cityfibre.com  |
+      | Ryan | ryan.ralphs@cityfibre.com  |
 ```
 
