@@ -100,12 +100,12 @@ Feature: Store a person in the database
   Scenario: Listen to person created event and store in the people table
     When The following events are published to "user-created"
       | name | email                 |
-      | Tom  | tomos.lloyd@enta.net  |
-      | Ryan | ryan.ralphs@enta.net  |
+      | Tom  | tomos.lloyd@cityfibre.com  |
+      | Ryan | ryan.ralphs@cityfibre.com  |
     Then I should have the following in the "users" table
       | name | email                 |
-      | Tom  | tomos.lloyd@enta.net  |
-      | Ryan | ryan.ralphs@enta.net  |
+      | Tom  | tomos.lloyd@cityfibre.com  |
+      | Ryan | ryan.ralphs@cityfibre.com  |
 ```
 
 Consume an event and check that another event was published
