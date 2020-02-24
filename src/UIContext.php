@@ -17,11 +17,6 @@ class UIContext extends MinkContext implements Context
     public $session;
     public $row;
 
-    public function __construct()
-    {
-        $this->page = $this->getPage();
-        $this->session = $this->getSession();
-    }
 
     /**
      * @BeforeScenario
@@ -51,7 +46,17 @@ class UIContext extends MinkContext implements Context
 
     public function waitForJavaScript()
     {
-        $this->session->wait($this->javascriptWait, "document.readyState === 'complete'");
+        $this->getSession()->wait($this->javascriptWait, "document.readyState === 'complete'");
+    }
+
+    /**
+     * @Then I wait for :secs seconds
+     * @param $secs
+     */
+    public function waitForSeconds($secs)
+    {
+        $secs = $secs * 1000;
+        $this->getSession()->wait($secs);
     }
 
     /**
@@ -61,7 +66,7 @@ class UIContext extends MinkContext implements Context
      */
     public function theCssSelectorShouldHaveProperty($element, $property)
     {
-        $element = $this->page->find('css', $element);
+        $element = $this->getPage()->find('css', $element);
         assertTrue($element->hasClass($property));
     }
 
@@ -96,7 +101,7 @@ class UIContext extends MinkContext implements Context
      */
     public function iClickTableHeader($header)
     {
-        $row = $this->page->find('css', sprintf('table th:contains("%s")', $header));
+        $row = $this->getPage()->find('css', sprintf('table th:contains("%s")', $header));
         $this->waitForJavaScript();
         $row->press();
     }
@@ -110,7 +115,7 @@ class UIContext extends MinkContext implements Context
      */
     public function assertElementHasCssValue($selector, $property, $value)
     {
-        $element = $this->page->find('css', $selector);
+        $element = $this->getPage()->find('css', $selector);
 
         if (empty($element)) {
             $message = sprintf('Could not find element using the selector "%s"', $selector);
