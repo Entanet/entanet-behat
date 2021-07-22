@@ -142,7 +142,7 @@ class LoadContext extends TestCase implements Context
     }
 
     /**
-     * @param $table
+     * @param TableNode $table
      * @return mixed
      * @Given I have a payload of:
      */
@@ -286,6 +286,8 @@ class LoadContext extends TestCase implements Context
         $keys = $table->getRow(0);
 
         $values = $table->getRow(1);
+
+        $array = [];
 
         $array = array_combine($keys, $values);
 
