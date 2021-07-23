@@ -341,7 +341,18 @@ class UIContext extends MinkContext implements Context
         $formatString = str_replace( array( '\'', '"', ',' , ';', '<', '>', '-', ':' ), '', $carbonDate.$uniqueString);
         $this->fillField($field, $formatString);
     }
-     
+
+
+    /**
+     *@When I fill in :field with :text
+     *@param $field, $text
+     */
+    public function iFillFieldWithText($field, $text)
+    {
+        $this->fillField($field, $text);
+    }
+
+
 
 
     /**
