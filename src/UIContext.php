@@ -343,14 +343,7 @@ class UIContext extends MinkContext implements Context
     }
 
 
-    /**
-     *@When I fill in :field with :text
-     *@param $field, $text
-     */
-    public function iFillFieldWithText($field, $text)
-    {
-        $this->fillField($field, $text);
-    }
+
 
 
 
